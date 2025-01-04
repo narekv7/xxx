@@ -2,25 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
+    <meta 
+      name="viewport" 
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Dora AI</title>
     <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
+      html, body {
+        margin: 0; 
+        padding: 0; 
         height: 100%;
-        overflow: hidden; /* Prevent extra scrollbars */
+        overflow: hidden; /* We’ll control scrolling in the iframe or JS */
       }
-
       iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
         border: none;
-        display: block; /* Avoid extra whitespace */
       }
     </style>
   </head>
@@ -28,23 +27,34 @@
     <iframe
       id="chatFrame"
       src="https://www.chatbase.co/chatbot-iframe/zwOpiGmzLwmODR8weekJ9"
-    >
-    </iframe>
+    ></iframe>
+
     <script>
-      const iframe = document.getElementById("chatFrame");
+      (function() {
+        const iframe = document.getElementById('chatFrame');
 
-      function adjustIframeHeight() {
-        const viewportHeight = window.innerHeight;
-        iframe.style.height = viewportHeight + "px";
-      }
+        function updateHeight() {
+          if (window.visualViewport) {
+            iframe.style.height = window.visualViewport.height + 'px';
+          } else {
+            iframe.style.height = window.innerHeight + 'px';
+          }
+        }
 
-      // Adjust on load
-      adjustIframeHeight();
+        // Initial update
+        updateHeight();
 
-      // Adjust on resize (handles iOS keyboard)
-      window.addEventListener("resize", () => {
-        setTimeout(adjustIframeHeight, 300); // Delay for keyboard animation
-      });
+        // Listen for iOS keyboard changes
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener('resize', updateHeight);
+        } else {
+          window.addEventListener('resize', updateHeight);
+        }
+
+        // Focus events to catch immediate input field focus
+        document.addEventListener('focusin', updateHeight);
+        document.addEventListener('focusout', updateHeight);
+      })();
     </script>
   </body>
 </html>
